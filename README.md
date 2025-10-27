@@ -135,7 +135,7 @@ ventas_project_new/
 ## Uso
 
 1. Acceder al sistema:
-   - Abrir http://127.0.0.1:8000/. (En caso de funcionar, probar el siguiente link http://127.0.0.1.8000/ventas/)
+   - Abrir http://127.0.0.1:8000/. (En caso de no funcionar, probar el siguiente link http://127.0.0.1.8000/ventas/)
    - Iniciar sesión si es necesario
 
 2. Gestión de Clientes:
