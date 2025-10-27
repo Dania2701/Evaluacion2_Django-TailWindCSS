@@ -22,36 +22,44 @@ Sistema web desarrollado con Django y Tailwind CSS para la gestión de ventas, c
 ## Instalación
 
 1. Clonar el repositorio:
-```bash
+```powershell
 git clone <https://github.com/Dania2701/Evaluacion2_Django-TailWindCSS.git>
-cd ventas_project_new
+Set-Location ventas_project_new
 ```
 
 2. Crear y activar entorno virtual:
-```bash
+```powershell
 python -m venv venv
 .\venv\Scripts\activate  # Windows
 source venv/bin/activate  # Linux/Mac
 ```
+> Si aparece el error “running scripts is disabled…”, ejecuta (como administrador):
+> ```powershell
+> Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+> ```
+> Luego vuelve a activar:
+> ```powershell
+> .\venv\Scripts\Activate.ps1
+> ```
 
 3. Instalar dependencias:
-```bash
-pip install -r requirements.txt
+```powershell
+pip install django
 ```
 
 4. Aplicar migraciones:
-```bash
+```powershell
 python manage.py makemigrations
 python manage.py migrate
 ```
 
 5. Crear superusuario (opcional):
-```bash
+```powershell
 python manage.py createsuperuser
 ```
 
 6. Iniciar servidor de desarrollo:
-```bash
+```powershell
 python manage.py runserver
 ```
 
@@ -159,17 +167,22 @@ ventas_project_new/
 Para contribuir al proyecto:
 
 1. Crear rama feature:
-```bash
+```powershell
 git checkout -b feature/nombre-caracteristica
 ```
 
 2. Realizar cambios y commits:
-```bash
+```powershell
 git add .
 git commit -m "Descripción del cambio"
 ```
 
 3. Subir cambios:
-```bash
+```powershell
 git push origin feature/nombre-caracteristica
 ```
+
+## Contacto
+
+Para dudas o sugerencias, contactar a:
+- GitHub: [Dania2701](https://github.com/Dania2701)
