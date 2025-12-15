@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Ventas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Encabezado -->
+    <header class="bg-blue-600 text-white p-4 shadow-md">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-semibold">Sistema de Ventas</h1>
+            <nav class="space-x-4">
+                <a href="{% url 'dashboard' %}" class="text-yellow-300 font-semibold hover:text-yellow-200 transition">Inicio</a>
+                <a href="{% url 'listar_clientes' %}" class="hover:underline">Clientes</a>
+                <a href="{% url 'listar_productos' %}" class="hover:underline">Productos</a>
+                <a href="{% url 'listar_ventas' %}" class="hover:underline">Ventas</a>
+                
+                    <form action="{% url 'logout' %}" method="post" class="inline-block">
+                        {% csrf_token %}
+                        <button type="submit"
+                                class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition">
+                            Cerrar sesión
+                        </button>
+                    </form>
+                
+            </nav>
+        </div>
+    </header>
+
+    <!-- Contenido dinámico -->
+    <main class="flex-grow max-w-6xl mx-auto w-full p-6">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Pie de página -->
+    <footer class="bg-blue-600 text-white text-center p-3 mt-8">
+        <p class="text-sm">© {{ year|default:2025 }} Sistema de Ventas - Django + Tailwind</p>
+    </footer>
+
+</body>
+</html>

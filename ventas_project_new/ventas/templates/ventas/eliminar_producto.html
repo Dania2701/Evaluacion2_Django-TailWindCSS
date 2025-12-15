@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-md mx-auto">
+    <div class="bg-white rounded-lg shadow-md p-6 text-center">
+        <h2 class="text-2xl font-bold mb-4">Eliminar Producto</h2>
+        <p class="mb-4">¿Estás seguro que deseas eliminar el producto <strong>{{ producto.nombre }}</strong>?</p>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="flex justify-center space-x-3">
+                <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md">Sí, eliminar</button>
+                <a href="{% url 'listar_productos' %}" class="px-4 py-2 bg-gray-100 rounded-md text-gray-700">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

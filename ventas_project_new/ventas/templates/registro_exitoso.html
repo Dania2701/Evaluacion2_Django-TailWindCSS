@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-md mx-auto mt-10">
+    <h2 class="text-2xl font-bold mb-6 text-center">Registro Exitoso</h2>
+
+    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 text-center">
+        <p class="text-green-600 font-semibold mb-4">Tu cuenta ha sido creada correctamente</p>
+        <a href="{% url 'login' %}"
+           class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+            Ir a iniciar Sesión
+        </a>
+    </div>
+</div>
+{% endblock %}

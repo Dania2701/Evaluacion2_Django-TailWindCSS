@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="max-w-6xl mx-auto p-6">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Panel Principal</h1>
+
+<!-- Tarjetas de resumen -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+    <!-- Total de ventas -->
+    <div class="bg-blue-100 p-4 rounded-lg shadow flex flex-col justify-between">
+        <div>
+            <h3 class="text-blue-800 font-semibold">Total de Ventas</h3>
+            <p class="text-2xl font-bold text-blue-900">{{ total_ventas }}</p>
+        </div>
+
+        <a href="{% url 'crear_venta' %}"
+           class="mt-4 inline-block bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800 text-center">
+            + Nueva Venta
+        </a>
+    </div>
+
+    <!-- Clientes registrados -->
+    <div class="bg-green-100 p-4 rounded-lg shadow flex flex-col justify-between">
+        <div>
+            <h3 class="text-green-800 font-semibold">Clientes Registrados</h3>
+            <p class="text-2xl font-bold text-green-900">{{ total_clientes }}</p>
+        </div>
+
+        <a href="{% url 'crear_cliente' %}"
+           class="mt-4 inline-block bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800 text-center">
+            + Nuevo Cliente
+        </a>
+    </div>
+
+    <!-- Productos disponibles -->
+    <div class="bg-yellow-100 p-4 rounded-lg shadow flex flex-col justify-between">
+        <div>
+            <h3 class="text-yellow-800 font-semibold">Productos Disponibles</h3>
+            <p class="text-2xl font-bold text-yellow-900">{{ total_productos }}</p>
+        </div>
+
+        <a href="{% url 'crear_producto' %}"
+           class="mt-4 inline-block bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700 text-center">
+            + Nuevo Producto
+        </a>
+    </div>
+</div>
+
+    <!-- Gráficos -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="text-lg font-semibold mb-4 text-gray-700">Productos más vendidos</h3>
+            <canvas id="productosChart"></canvas>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="text-lg font-semibold mb-4 text-gray-700">Clientes con más compras</h3>
+            <canvas id="clientesChart"></canvas>
+        </div>
+    </div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Datos de ejemplo (estos luego se reemplazan desde views)
+    const productosLabels = JSON.parse('{{ productos_labels|safe|escapejs }}');
+    const productosData = JSON.parse('{{ productos_data|safe|escapejs }}');
+    const clientesLabels = JSON.parse('{{ clientes_labels|safe|escapejs }}');
+    const clientesData = JSON.parse('{{ clientes_data|safe|escapejs }}');
+
+    if (productosData.length === 0) {
+        document.getElementById('productosChart').parentElement.innerHTML =
+            "<p class='text-gray-500 text-center py-10'>No hay datos suficientes</p>";
+    } else {
+        new Chart(document.getElementById('productosChart'), {
+            type: 'pie',
+            data: {
+                labels: productosLabels,
+                datasets: [{
+                    data: productosData
+                }]
+            }
+        });
+    }
+
+    if (clientesData.length === 0) {
+        document.getElementById('clientesChart').parentElement.innerHTML =
+            "<p class='text-gray-500 text-center py-10'>No hay datos suficientes</p>";
+    } else {
+        new Chart(document.getElementById('clientesChart'), {
+            type: 'bar',
+            data: {
+                labels: clientesLabels,
+                datasets: [{
+                    label: 'Total de compras',
+                    data: clientesData
+                }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    }
+</script>
+
+{% endblock %}

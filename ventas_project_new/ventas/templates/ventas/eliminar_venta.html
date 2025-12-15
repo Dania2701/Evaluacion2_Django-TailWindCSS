@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="card">
+        <div class="card-body text-center">
+            <h2 class="mb-4">Eliminar Venta</h2>
+            <p class="lead">¿Estás seguro que deseas eliminar la venta #{{ venta.id }}?</p>
+            <p>Cliente: {{ venta.cliente.nombre }}</p>
+            <p>Fecha: {{ venta.fecha }}</p>
+            <p>Total: ${{ venta.total }}</p>
+
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+                <a href="{% url 'listar_ventas' %}" class="btn btn-secondary">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

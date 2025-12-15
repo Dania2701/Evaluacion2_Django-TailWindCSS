@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto mt-8 bg-white p-6 shadow rounded-lg">
+
+    <!-- Encabezado con título y botón alineados -->
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">Listado de Ventas</h2>
+
+        <a href="{% url 'crear_venta' %}"
+           class="bg-blue-600 text-white px-4 py-2 rounded-md shadow hover:bg-blue-700 transition">
+            + Nueva Venta
+        </a>
+    </div>
+
+    <table class="w-full table-auto border-collapse">
+        <thead>
+            <tr class="bg-gray-100 text-left text-gray-700">
+                <th class="p-2 border">ID Venta</th>
+                <th class="p-2 border">Cliente</th>
+                <th class="p-2 border">Fecha</th>
+                <th class="p-2 border">Productos</th>
+                <th class="p-2 border">Total Final</th>
+                <th class="p-2 border">Acciones</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for v in ventas %}
+            <tr class="border-b hover:bg-gray-50">
+
+                <td class="p-2">{{ v.id }}</td>
+
+                <td class="p-2">{{ v.cliente }}</td>
+
+                <td class="p-2">{{ v.fecha|date:"d-m-Y H:i" }}</td>
+
+                <td class="p-2">
+                    {{ v.total_cantidad }} productos
+                </td>
+
+                <td class="p-2 font-semibold">
+                    ${{ v.total_final }}
+                </td>
+
+                <td class="p-2 space-x-1">
+                    <a class="text-blue-600 hover:underline"
+                       href="{% url 'ver_detalles_venta' v.id %}">
+                       Ver
+                    </a>
+
+                    <a class="text-green-600 hover:underline"
+                       href="{% url 'editar_venta' v.id %}">Editar</a>
+
+                    <a class="text-red-600 hover:underline"
+                       href="{% url 'eliminar_venta' v.id %}">Eliminar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td class="p-4 text-center text-gray-500" colspan="6">
+                    No hay ventas registradas.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% endblock %}

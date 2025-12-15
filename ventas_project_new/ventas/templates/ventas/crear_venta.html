@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto mt-8">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Crear Nueva Venta</h2>
+
+    <form method="POST" class="bg-white shadow-lg rounded-lg p-6 space-y-6">
+        {% csrf_token %}
+
+        <!-- Cliente -->
+        <div>
+            <h3 class="text-lg font-semibold text-gray-700 mb-2">Cliente</h3>
+            {{ venta_form.cliente }}
+        </div>
+
+        <!-- FORMSET -->
+        <div id="productos-container">
+            <h3 class="text-lg font-semibold text-gray-700 mb-4">Productos</h3>
+
+            {{ formset.management_form }}
+
+            {% for form in formset %}
+            <div class="detalle-item border rounded-lg p-4 mb-6 bg-gray-50" data-form-index="{{ forloop.counter0 }}">
+
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+
+                    <!-- PRODUCTO -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Producto</label>
+                        {{ form.producto }}
+                    </div>
+
+                    <!-- CANTIDAD -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Cantidad</label>
+                        {{ form.cantidad }}
+                    </div>
+
+                    <!-- PRECIO -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Precio</label>
+                        <input type="text" readonly class="precio-input w-full border rounded p-2 bg-gray-100" value="0">
+                    </div>
+
+                    <!-- SUBTOTAL -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Subtotal</label>
+                        <input type="text" readonly class="subtotal-input w-full border rounded p-2 bg-gray-100" value="0">
+                    </div>
+
+                </div>
+
+                {% if form.instance.pk %}
+                    {{ form.DELETE }}
+                {% endif %}
+
+                <button type="button"
+                        class="eliminar-item mt-3 text-red-600 hover:text-red-800 font-bold">
+                    Eliminar
+                </button>
+
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- BOTÓN AGREGAR PRODUCTO -->
+        <div class="text-right">
+            <button type="button" id="agregar-producto"
+                    class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition">
+                + Agregar producto
+            </button>
+        </div>
+
+        <!-- Mostrar Descuentos -->
+        <div class="mt-4 p-3 bg-blue-100 rounded">
+            <p class="font-semibold">Descuentos aplicados automáticamente:</p>
+            <ul class="list-disc ml-6">
+                <li>3 productos → 10% de descuento</li>
+                <li>5 productos o más → 15% de descuento</li>
+                <li>10 productos o más → 25% de descuento</li>
+            </ul>
+        </div>
+
+
+        <!-- TOTAL GENERAL -->
+        <div class="text-right mt-6">
+            <h3 class="text-xl font-bold text-gray-800">
+                Total Venta:
+                <span id="total-general" class="text-blue-600">$0.00</span>
+            </h3>
+        </div>
+
+        <div class="flex justify-end space-x-4 mt-6">
+            <a href="{% url 'listar_ventas' %}"
+               class="px-4 py-2 bg-gray-100 rounded-md text-gray-700">
+                Cancelar
+            </a>
+            <button type="submit"
+                    class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                Guardar
+            </button>
+        </div>
+
+    </form>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    function actualizarTotales() {
+        let totalGeneral = 0;
+        let totalCantidad = 0;
+
+        document.querySelectorAll(".detalle-item").forEach(item => {
+            const selectProd = item.querySelector("select");
+            const inputCant = item.querySelector("input[name$='cantidad']");
+            const precioInput = item.querySelector(".precio-input");
+            const subtotalInput = item.querySelector(".subtotal-input");
+
+            const precio = parseFloat(selectProd.selectedOptions[0]?.dataset.precio || 0);
+            const cantidad = parseInt(inputCant.value || 0);
+
+            precioInput.value = precio.toFixed(2);
+
+            let subtotal = precio * cantidad;
+
+            subtotalInput.value = subtotal.toFixed(2);
+
+            totalGeneral += subtotal;
+            totalCantidad += cantidad;
+        });
+
+        let descuentoGlobal = 0;
+        if (totalCantidad >= 10) descuentoGlobal = 0.25;
+        else if (totalCantidad >= 5) descuentoGlobal = 0.15;
+        else if (totalCantidad >= 3) descuentoGlobal = 0.10;
+
+        const totalFinal = totalGeneral * (1 - descuentoGlobal);
+
+        document.getElementById("total-general").textContent =
+            `$${totalFinal.toFixed(2)}`;
+    }
+
+    document.addEventListener("input", e => {
+        if (e.target.matches("select, input")) actualizarTotales();
+    });
+
+    actualizarTotales();
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    const totalForms = document.querySelector("#id_detalleventa_set-TOTAL_FORMS");
+
+    document.getElementById("agregar-producto").addEventListener("click", function () {
+
+        const container = document.getElementById("productos-container");
+        const formIndex = parseInt(totalForms.value);
+        const emptyFormHtml = `
+            <div class="detalle-item border rounded-lg p-4 mb-6 bg-gray-50">
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Producto</label>
+                        ${document.querySelector("[id$='-producto']").outerHTML.replace(/-\d+-/, `-${formIndex}-`)}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Cantidad</label>
+                        <input type="number" name="detalleventa_set-${formIndex}-cantidad" class="form-input" min="1" value="1">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Precio</label>
+                        <input type="text" readonly class="precio-input w-full border rounded p-2 bg-gray-100" value="0">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Subtotal</label>
+                        <input type="text" readonly class="subtotal-input w-full border rounded p-2 bg-gray-100" value="0">
+                    </div>
+                </div>
+
+                <button type="button" class="eliminar-item mt-3 text-red-600 hover:text-red-800 font-bold">
+                    Eliminar
+                </button>
+            </div>
+        `;
+
+        container.insertAdjacentHTML("beforeend", emptyFormHtml);
+        totalForms.value = formIndex + 1;
+    });
+
+    document.addEventListener("click", function (e) {
+        if (e.target.classList.contains("eliminar-item")) {
+            e.target.closest(".detalle-item").remove();
+        }
+    });
+
+});
+</script>
+
+{% endblock %}
