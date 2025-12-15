@@ -11,6 +11,9 @@ from django.contrib import messages
 from django.forms import inlineformset_factory
 from django.http import JsonResponse
 from django.contrib.auth.models import User
+from .serializers import ClienteSerializer, ProductoSerializer, VentaSerializer, DetalleVentaSerializer
+from rest_framework.viewsets import ModelViewSet
+
 
 #Listar Cliente
 @login_required
@@ -344,6 +347,7 @@ def registro_usuario(request):
         password = request.POST['password']
         nombre = request.POST['nombre']
         rut = request.POST['rut']
+        email = request.POST['email']
         
         password_confirm = request.POST['password_confirm']    
         if password != password_confirm:
@@ -358,9 +362,18 @@ def registro_usuario(request):
             messages.error(request, "El RUT ya está registrado.")
             return render(request, 'registro.html')
         
-        user = User.objects.create_user(username=username, password=password)
+        if Cliente.objects.filter(email=email).exists():
+            messages.error(request, "El correo electrónico ya está registrado.")
+            return render(request, 'registro.html')
         
-        Cliente.objects.create(user=user,nombre=nombre, rut=rut,email=username)
+        try:
+            with transaction.atomic():
+                user = User.objects.create_user(username=username, password=password, email=email)
+
+                Cliente.objects.create(user=user, nombre=nombre, rut=rut, email=email)
+        except Exception:
+            messages.error(request, "Ocurrió un error al registrar el usuario")
+            return render(request, 'registro.html')
         
         messages.success(request, "Usuario registrado exitosamente. Ahora puedes iniciar sesión.")
         
@@ -384,3 +397,20 @@ def get_info_producto(request, id):
     return JsonResponse({
         "precio": float(producto.precio)
     })
+
+#API ViewSets
+class ClienteViewSet(ModelViewSet):
+    queryset = Cliente.objects.all()
+    serializer_class = ClienteSerializer
+
+class ProductoViewSet(ModelViewSet):
+    queryset = Producto.objects.all()
+    serializer_class = ProductoSerializer
+
+class VentaViewSet(ModelViewSet):
+    queryset = Venta.objects.all()
+    serializer_class = VentaSerializer
+
+class DetalleVentaViewSet(ModelViewSet):
+    queryset = DetalleVenta.objects.all()
+    serializer_class = DetalleVentaSerializer
