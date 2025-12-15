@@ -1,8 +1,10 @@
-# Evaluacion2_Django-TailWindCSS
+# Evaluacion_Django-TailWindCSS
 
 # Sistema de Gestión de Ventas
 
-Sistema web desarrollado con Django y Tailwind CSS para la gestión de ventas, clientes y productos. Permite realizar operaciones CRUD (Crear, Leer, Actualizar, Eliminar) sobre ventas, clientes y productos, así como el seguimiento de detalles de ventas.
+Sistema web desarrollado con Django y Tailwind CSS para la gestión de ventas, clientes y productos. Permite realizar operaciones CRUD (Crear, Leer, Actualizar, Eliminar) sobre ventas, clientes y productos, así como el seguimiento de detalles de ventas, además, con una **API RESTful integrada** basada en **Django REST Framework**.
+
+La API se encuentra completamente integrada al proyecto existente, utilizando los mismos modelos, base de datos y sistema de usuarios de Django.
 
 ## Características
 
@@ -12,12 +14,17 @@ Sistema web desarrollado con Django y Tailwind CSS para la gestión de ventas, c
 - 💰 Registro y seguimiento de ventas
 - 📊 Detalles de ventas con cálculos automáticos
 - 🔒 Sistema de autenticación Django
+- 🔌 API RESTful integrada (JSON)
+- 📘 Documentación interactiva con Swagger
 
 ## Requisitos
 
 - Python 3.9+
 - Django 4.2+
 - Base de datos SQLite (incluida)
+- Django REST Framework
+- drf-yasg (Swagger)
+- Tailwind CSS
 
 ## Instalación
 
@@ -46,6 +53,8 @@ source venv/bin/activate  # Linux/Mac
 ```powershell
 pip install django
 ```
+pip install django djangorestframework drf-yasg
+```
 
 4. Aplicar migraciones:
 ```powershell
@@ -63,25 +72,72 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-El sistema estará disponible en: http://127.0.0.1:8000/ventas/
+El sistema estará disponible en: http://127.0.0.1:8000/
+
+## API REST
+Descripción
+
+Se implementó una API RESTful utilizando Django REST Framework, permitiendo exponer los datos del sistema en formato JSON para su consumo por aplicaciones externas, como frontends alternativos o aplicaciones móviles.
+
+La API utiliza los mismos modelos y usuarios del sistema web, funcionando como una capa adicional de acceso a los datos.
+
+## Endpoints principales
+
+| Endpoint               | Descripción                   |
+| ---------------------- | ----------------------------- |
+| `/api/clientes/`       | Gestión de clientes           |
+| `/api/productos/`      | Gestión de productos          |
+| `/api/ventas/`         | Gestión de ventas             |
+| `/api/detalle-ventas/` | Gestión del detalle de ventas |
+
+Todos los endpoints soportan los métodos HTTP estándar:
+
+- GET
+- POST
+- PUT
+- DELETE
+
+## Autenticación y seguridad
+
+La API se encuentra protegida mediante mecanismos de autenticación, utilizando el sistema de usuarios de Django.
+
+Solo usuarios registrados pueden acceder a los endpoints.
+
+Swagger permite autenticarse mediante Basic Authentication.
+
+La API acepta múltiples usuarios sin configuraciones adicionales.
+
+## Documentación con Swagger
+
+Se implementó documentación interactiva utilizando Swagger (drf-yasg), permitiendo visualizar y probar los endpoints directamente desde el navegador.
+
+- Swagger UI:
+   http://127.0.0.1:8000/swagger/
+
+- Redoc:
+   http://127.0.0.1:8000/redoc/
 
 ## Estructura del Proyecto
 
 ```
 ventas_project_new/
 ├── manage.py
+├── api/                    # Configuración de la API REST
+│   └── urls.py
 ├── ventas/                 # Aplicación principal
-│   ├── models.py          # Modelos de datos
-│   ├── views.py           # Lógica de vistas
-│   ├── forms.py           # Formularios
-│   ├── urls.py            # URLs de la aplicación
-│   └── templates/         # Plantillas HTML
-│       └── ventas/        # Templates específicos
-├── ventas_project_new/    # Configuración del proyecto
-│   ├── settings.py        # Configuración general
-│   ├── urls.py           # URLs del proyecto
-│   └── wsgi.py           # Configuración WSGI
-└── static/               # Archivos estáticos
+│   ├── models.py           # Modelos de datos
+│   ├── serializers.py      # Serializers API
+│   ├── views.py            # Vistas web y ViewSets
+│   ├── forms.py            # Formularios
+│   ├── urls.py             # URLs de la aplicación
+│   └── templates/
+│       └── ventas/
+├── ventas_project_new/     # Configuración del proyecto
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+└── static/                 # Archivos estáticos
+
 ```
 
 ## Modelos
