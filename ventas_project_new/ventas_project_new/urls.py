@@ -27,13 +27,12 @@ schema_view = get_schema_view(
       description="Documentación de la API para el proyecto de ventas",),
     public=True,
     permission_classes=(permissions.AllowAny,),
+    authentication_classes=[],
 )
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('ventas.urls')),
-
+    path('api/', include('api.urls')),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]
-

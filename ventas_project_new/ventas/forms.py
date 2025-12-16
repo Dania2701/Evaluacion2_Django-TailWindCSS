@@ -66,7 +66,6 @@ class RegistroForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput, label='Contraseña')
     confirm_password = forms.CharField(widget=forms.PasswordInput, label='Confirmar Contraseña')
     rut = forms.CharField(max_length=12, label='RUT')
-    telefono = forms.CharField(max_length=20, label='Teléfono')
 
     # Validación: usuario repetido
     def clean_username(self):

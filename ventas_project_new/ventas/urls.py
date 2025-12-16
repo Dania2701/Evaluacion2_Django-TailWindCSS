@@ -36,8 +36,4 @@ urlpatterns = [
     #Para ver productos en crear venta
     path("producto/<int:id>/get_info/", views.get_info_producto, name="get_info_producto"),
 
-    #API URLs
-    path('admin/', admin.site.urls),
-    path('api/', include('api.urls')),
-
 ]

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db import transaction
 import json
 from .models import Cliente, Producto, Venta, DetalleVenta
-from .forms import ClienteForm, ProductoForm, VentaForm, DetalleVentaForm, DetalleVentaFormSet
+from .forms import ClienteForm, ProductoForm, VentaForm, DetalleVentaForm, RegistroForm
 from decimal import Decimal
 from django.db.models import Sum
 from django.contrib.auth.decorators import login_required
@@ -11,7 +11,7 @@ from django.contrib import messages
 from django.forms import inlineformset_factory
 from django.http import JsonResponse
 from django.contrib.auth.models import User
-from .serializers import ClienteSerializer, ProductoSerializer, VentaSerializer, DetalleVentaSerializer
+from .serializers import ClienteSerializer, ProductoSerializer, VentaSerializer
 from rest_framework.viewsets import ModelViewSet
 
 
@@ -343,42 +343,37 @@ def dashboard(request):
 #Registro Usuario
 def registro_usuario(request):
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        nombre = request.POST['nombre']
-        rut = request.POST['rut']
-        email = request.POST['email']
-        
-        password_confirm = request.POST['password_confirm']    
-        if password != password_confirm:
-                messages.error(request, "Las contraseñas no coinciden.")
-                return render(request, 'registro.html')
-        
-        if User.objects.filter(username=username).exists():
-            messages.error(request, "El nombre de usuario ya existe.")
-            return render(request, 'registro.html')
-        
-        if Cliente.objects.filter(rut=rut).exists():
-            messages.error(request, "El RUT ya está registrado.")
-            return render(request, 'registro.html')
-        
-        if Cliente.objects.filter(email=email).exists():
-            messages.error(request, "El correo electrónico ya está registrado.")
-            return render(request, 'registro.html')
-        
-        try:
-            with transaction.atomic():
-                user = User.objects.create_user(username=username, password=password, email=email)
+        form = RegistroForm(request.POST)
 
-                Cliente.objects.create(user=user, nombre=nombre, rut=rut, email=email)
-        except Exception:
-            messages.error(request, "Ocurrió un error al registrar el usuario")
-            return render(request, 'registro.html')
-        
-        messages.success(request, "Usuario registrado exitosamente. Ahora puedes iniciar sesión.")
-        
-        return redirect('registro_exitoso')
-    return render(request, 'registro.html')
+        if form.is_valid():
+            try:
+                with transaction.atomic():
+                    user = User.objects.create_user(
+                        username=form.cleaned_data['username'],
+                        email=form.cleaned_data['email'],
+                        password=form.cleaned_data['password']
+                    )
+
+                    Cliente.objects.create(
+                        user=user,
+                        nombre=form.cleaned_data['username'],  # o agrega nombre al form si lo necesitas
+                        rut=form.cleaned_data['rut'],
+                        email=form.cleaned_data['email'],
+                    )
+
+                messages.success(request, "Usuario registrado exitosamente.")
+                return redirect('login')
+
+            except Exception as e:
+                raise
+
+        else:
+            messages.error(request, "Corrige los errores del formulario.")
+
+    else:
+        form = RegistroForm()
+
+    return render(request, 'registro.html', {'form': form})
 
 def registro_exitoso(request):
         return render(request, 'registro_exitoso.html')
@@ -410,7 +405,3 @@ class ProductoViewSet(ModelViewSet):
 class VentaViewSet(ModelViewSet):
     queryset = Venta.objects.all()
     serializer_class = VentaSerializer
-
-class DetalleVentaViewSet(ModelViewSet):
-    queryset = DetalleVenta.objects.all()
-    serializer_class = DetalleVentaSerializer
